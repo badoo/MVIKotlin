@@ -9,6 +9,7 @@ import com.arkivanov.mvikotlin.sample.todo.common.internal.store.list.TodoListSt
 import com.arkivanov.mvikotlin.sample.todo.common.internal.store.list.TodoListStoreAbstractFactory
 import com.badoo.reaktive.completable.completableFromFunction
 import com.badoo.reaktive.completable.subscribeOn
+import com.badoo.reaktive.observable.Observable
 import com.badoo.reaktive.scheduler.ioScheduler
 import com.badoo.reaktive.scheduler.mainScheduler
 import com.badoo.reaktive.single.map
@@ -68,3 +69,34 @@ internal class TodoListStoreFactory(
         }
     }
 }
+
+typealias Actor<Action, State, Result> = (Action, State) -> Observable<Result>
+
+typealias LabelPublisher<Result, State, Label> = (Result, State) -> Label?
+
+typealias PostProcessor<Result, State, Action> = (Result, State) -> Action?
+
+class PureExecutor<Intent : Any, Action : Any, State : Any, Result : Any, Label : Any>(
+    private val intentToAction: (Intent) -> Action,
+    private val actor: Actor<Action, State, Result>,
+    private val labelPublisher: LabelPublisher<Result, State, Label>?,
+    private val postProcessor: PostProcessor<Result, State, Action>?
+) : ReaktiveExecutor<Intent, Action, State, Result, Label>() {
+
+    override fun executeAction(action: Action, getState: () -> State) {
+        actor(action, getState()).subscribeScoped { result ->
+            dispatch(result)
+            val newState = getState()
+            labelPublisher?.invoke(result, newState)?.also(::publish)
+
+            postProcessor?.invoke(result, newState)?.also {
+                executeAction(it, getState)
+            }
+        }
+    }
+
+    override fun executeIntent(intent: Intent, getState: () -> State) {
+        executeAction(intentToAction(intent), getState)
+    }
+}
+
