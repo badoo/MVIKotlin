@@ -1,5 +1,7 @@
 package com.arkivanov.mvikotlin.core.statekeeper
 
+import kotlin.reflect.KClass
+
 /**
  * Creates a new instance of [StateKeeperContainer]
  *
@@ -9,7 +11,7 @@ package com.arkivanov.mvikotlin.core.statekeeper
  */
 @Suppress("FunctionName") // Factory function
 fun <State : Any, T : Any> StateKeeperContainer(
-    get: (state: State, key: String) -> T?,
-    put: (state: State, key: String, value: T) -> Unit
+    get: (state: State, key: String, clazz: KClass<out T>) -> T?,
+    put: (state: State, key: String, clazz: KClass<out T>, value: T) -> Unit
 ): StateKeeperContainer<State, T> =
     StateKeeperContainerImpl(get = get, put = put)

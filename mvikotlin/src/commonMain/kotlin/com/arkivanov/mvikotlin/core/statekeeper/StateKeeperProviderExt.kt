@@ -7,6 +7,12 @@ import com.arkivanov.mvikotlin.core.store.Store
 import kotlin.reflect.KClass
 
 /**
+ * Convenience method for [StateKeeperProvider.get]
+ */
+inline fun <T : Any, reified S : T> StateKeeperProvider<T>.get(key: String): StateKeeper<S> =
+    get(key, S::class)
+
+/**
  * Same as [StateKeeperProvider.get] but uses [KClass.toString] as key
  */
 inline fun <T : Any, reified S : T> StateKeeperProvider<T>.get(): StateKeeper<S> =
@@ -34,7 +40,7 @@ fun <T : Any> StateKeeperProvider<Any>?.retainInstance(lifecycle: Lifecycle, key
         return factory(lifecycle)
     }
 
-    val stateKeeper = get<RetainedInstance<T>>(key)
+    val stateKeeper: StateKeeper<RetainedInstance<T>> = get(key)
 
     val retainedInstance: RetainedInstance<T>? = stateKeeper.state
     val lifecycleRegistry = retainedInstance?.lifecycleRegistry ?: LifecycleRegistry()
