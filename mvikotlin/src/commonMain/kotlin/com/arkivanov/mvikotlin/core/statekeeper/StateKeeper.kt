@@ -3,6 +3,7 @@ package com.arkivanov.mvikotlin.core.statekeeper
 /**
  * Provides a way to save and restore state (e.g. `Store`'s state)
  */
+@ExperimentalStateKeeperApi
 interface StateKeeper<T : Any> {
 
     /**

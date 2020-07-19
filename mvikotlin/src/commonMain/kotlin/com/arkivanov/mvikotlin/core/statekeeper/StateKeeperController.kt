@@ -6,6 +6,7 @@ package com.arkivanov.mvikotlin.core.statekeeper
  * @param C a type of the state container
  * @param T a type of the state
  */
+@ExperimentalStateKeeperApi
 interface StateKeeperController<in C : Any, in T : Any> : StateKeeperProvider<T> {
 
     /**

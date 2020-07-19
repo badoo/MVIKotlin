@@ -1,6 +1,7 @@
 package com.arkivanov.mvikotlin.extensions.androidx.statekeeper
 
 import androidx.fragment.app.Fragment
+import com.arkivanov.mvikotlin.core.statekeeper.ExperimentalStateKeeperApi
 import com.arkivanov.mvikotlin.core.statekeeper.StateKeeperProvider
 
 /**
@@ -9,5 +10,6 @@ import com.arkivanov.mvikotlin.core.statekeeper.StateKeeperProvider
  * will be retained over configuration change.
  * The [Fragment] must be attached when calling this method.
  */
+@ExperimentalStateKeeperApi
 fun Fragment.retainingStateKeeperProvider(): StateKeeperProvider<Any> =
     retainingStateKeeperProvider { requireActivity().isChangingConfigurations }

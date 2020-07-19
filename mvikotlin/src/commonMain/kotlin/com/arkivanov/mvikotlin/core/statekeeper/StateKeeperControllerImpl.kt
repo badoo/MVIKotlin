@@ -3,6 +3,7 @@ package com.arkivanov.mvikotlin.core.statekeeper
 import com.badoo.reaktive.utils.ensureNeverFrozen
 import kotlin.reflect.KClass
 
+@ExperimentalStateKeeperApi
 internal class StateKeeperControllerImpl<in C : Any, in T : Any>(
     private val savedState: () -> C?,
     private val get: C.(key: String, clazz: KClass<out T>) -> T?,

@@ -2,6 +2,7 @@ package com.arkivanov.mvikotlin.core.statekeeper
 
 import kotlin.js.JsName
 
+@ExperimentalStateKeeperApi
 @JsName("simpleStateKeeperController")
 @Suppress("FunctionName") // Factory function
 fun SimpleStateKeeperController(savedState: () -> MutableMap<String, Any>?): SimpleStateKeeperController =

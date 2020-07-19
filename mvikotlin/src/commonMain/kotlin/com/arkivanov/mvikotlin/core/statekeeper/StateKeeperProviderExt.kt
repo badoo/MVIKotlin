@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 /**
  * A convenience method for [StateKeeperProvider.get]
  */
+@ExperimentalStateKeeperApi
 inline fun <T : Any, reified S : T> StateKeeperProvider<T>.get(key: String = S::class.toString()): StateKeeper<S> =
     get(S::class, key)
 
@@ -28,6 +29,7 @@ inline fun <T : Any, reified S : T> StateKeeperProvider<T>.get(key: String = S::
  * @param factory a factory function that accepts the special [Lifecycle] and returns an `instance` to be retained later
  * @return either a retained `instance` or a new `instance` created by the `factory` function if there is no retained one
  */
+@ExperimentalStateKeeperApi
 fun <T : Any> StateKeeperProvider<Any>?.retainInstance(lifecycle: Lifecycle, key: String, factory: (Lifecycle) -> T): T {
     if (this == null) {
         return factory(lifecycle)
@@ -74,12 +76,14 @@ fun <T : Any> StateKeeperProvider<Any>?.retainInstance(lifecycle: Lifecycle, key
     return instance
 }
 
+@ExperimentalStateKeeperApi
 inline fun <reified T : Any> StateKeeperProvider<Any>?.retainInstance(lifecycle: Lifecycle, noinline factory: (Lifecycle) -> T): T =
     retainInstance(lifecycle = lifecycle, key = T::class.toString(), factory = factory)
 
 /**
  * Same as [retainInstance] but dedicated to retain [Store]s. Automatically disposes the [Store] at the end of [Lifecycle].
  */
+@ExperimentalStateKeeperApi
 fun <T : Store<*, *, *>> StateKeeperProvider<Any>?.retainStore(lifecycle: Lifecycle, key: String, factory: (Lifecycle) -> T): T =
     retainInstance(lifecycle = lifecycle, key = key) {
         val store = factory(it)
@@ -87,6 +91,7 @@ fun <T : Store<*, *, *>> StateKeeperProvider<Any>?.retainStore(lifecycle: Lifecy
         store
     }
 
+@ExperimentalStateKeeperApi
 inline fun <reified T : Store<*, *, *>> StateKeeperProvider<Any>?.retainStore(lifecycle: Lifecycle, noinline factory: (Lifecycle) -> T): T =
     retainInstance(lifecycle = lifecycle) {
         val store = factory(it)

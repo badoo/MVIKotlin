@@ -4,10 +4,12 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.arkivanov.mvikotlin.core.statekeeper.ExperimentalStateKeeperApi
 import com.arkivanov.mvikotlin.core.statekeeper.SimpleStateKeeperController
 import com.arkivanov.mvikotlin.core.statekeeper.StateKeeperProvider
 import com.arkivanov.mvikotlin.core.statekeeper.saveAndGet
 
+@ExperimentalStateKeeperApi
 internal inline fun <T> T.retainingStateKeeperProvider(
     crossinline isChangingConfigurations: () -> Boolean
 ): StateKeeperProvider<Any> where T : ViewModelStoreOwner, T : LifecycleOwner {
