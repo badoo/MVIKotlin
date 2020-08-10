@@ -1,6 +1,7 @@
 package com.arkivanov.mvikotlin.timetravel.controller
 
 import com.arkivanov.mvikotlin.core.store.StoreEventType
+import com.arkivanov.mvikotlin.core.utils.assertOnMainThread
 import com.arkivanov.mvikotlin.core.utils.isAssertOnMainThreadEnabled
 import com.arkivanov.mvikotlin.timetravel.TimeTravelEvent
 import com.arkivanov.mvikotlin.timetravel.TimeTravelState
@@ -15,6 +16,8 @@ class TimeTravelControllerRecordingTest {
 
     @BeforeTest
     fun before() {
+        println("Checking main thread")
+        assertOnMainThread()
 //        isAssertOnMainThreadEnabled = false
         env = TimeTravelControllerTestingEnvironment()
         env.controller.startRecording()

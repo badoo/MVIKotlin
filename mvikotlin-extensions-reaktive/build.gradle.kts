@@ -12,6 +12,7 @@ kotlin {
                 implementation(Deps.Badoo.Reaktive.Reaktive)
                 implementation(Deps.Badoo.Reaktive.ReaktiveAnnotations)
                 implementation(Deps.Badoo.Reaktive.Utils)
+                implementation(Deps.Badoo.Reaktive.ReaktiveTesting)
             }
         }
     }
