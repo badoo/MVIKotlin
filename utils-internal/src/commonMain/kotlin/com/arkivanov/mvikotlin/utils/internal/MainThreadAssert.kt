@@ -16,6 +16,7 @@ internal expect val currentThreadDescription: String
 
 fun assertOnMainThread() {
     if (isAssertOnMainThreadEnabled) {
+        println("Current thread is: $currentThreadDescription")
         require(isMainThread) {
             "Not on Main thread, current thread is: $currentThreadDescription"
         }

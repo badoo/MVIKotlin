@@ -15,14 +15,14 @@ class TimeTravelControllerRecordingTest {
 
     @BeforeTest
     fun before() {
-        isAssertOnMainThreadEnabled = false
+//        isAssertOnMainThreadEnabled = false
         env = TimeTravelControllerTestingEnvironment()
         env.controller.startRecording()
     }
 
     @AfterTest
     fun after() {
-        isAssertOnMainThreadEnabled = true
+//        isAssertOnMainThreadEnabled = true
     }
 
     @Test
