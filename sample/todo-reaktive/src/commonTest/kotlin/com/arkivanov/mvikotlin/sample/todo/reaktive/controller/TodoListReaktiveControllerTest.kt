@@ -1,7 +1,7 @@
 package com.arkivanov.mvikotlin.sample.todo.reaktive.controller
 
-import com.arkivanov.mvikotlin.core.instancekeeper.InstanceContainer
-import com.arkivanov.mvikotlin.core.instancekeeper.InstanceKeeperProvider
+import com.arkivanov.mvikotlin.core.instancekeeper.DefaultInstanceKeeper
+import com.arkivanov.mvikotlin.core.instancekeeper.InstanceKeeper
 import com.arkivanov.mvikotlin.core.lifecycle.Lifecycle
 import com.arkivanov.mvikotlin.core.lifecycle.LifecycleRegistry
 import com.arkivanov.mvikotlin.core.lifecycle.resume
@@ -38,7 +38,7 @@ class TodoListReaktiveControllerTest {
             override val storeFactory: StoreFactory = DefaultStoreFactory
             override val database: TodoDatabase = this@TodoListReaktiveControllerTest.database
             override val lifecycle: Lifecycle = this@TodoListReaktiveControllerTest.lifecycle
-            override val instanceKeeperProvider: InstanceKeeperProvider = InstanceContainer(lifecycle)
+            override val instanceKeeper: InstanceKeeper = DefaultInstanceKeeper()
             override val listOutput: (Output) -> Unit = { output += it }
         }
 
