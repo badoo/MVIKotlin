@@ -3,10 +3,10 @@ package com.arkivanov.mvikotlin.sample.todo.android.list
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.arkivanov.mvikotlin.core.instancekeeper.InstanceKeeperProvider
+import com.arkivanov.mvikotlin.core.instancekeeper.InstanceKeeper
 import com.arkivanov.mvikotlin.core.lifecycle.Lifecycle
 import com.arkivanov.mvikotlin.core.store.StoreFactory
-import com.arkivanov.mvikotlin.extensions.androidx.instancekeeper.getInstanceKeeperProvider
+import com.arkivanov.mvikotlin.extensions.androidx.instancekeeper.getInstanceKeeper
 import com.arkivanov.mvikotlin.extensions.androidx.lifecycle.asMviLifecycle
 import com.arkivanov.mvikotlin.sample.todo.android.FrameworkType
 import com.arkivanov.mvikotlin.sample.todo.android.LifecycledConsumer
@@ -26,7 +26,7 @@ class TodoListFragment(
     private fun createController(lifecycle: Lifecycle): TodoListController {
         val todoListControllerDependencies =
             object : TodoListController.Dependencies, Dependencies by dependencies {
-                override val instanceKeeperProvider: InstanceKeeperProvider = getInstanceKeeperProvider()
+                override val instanceKeeper: InstanceKeeper = getInstanceKeeper()
                 override val lifecycle: Lifecycle = lifecycle
             }
 

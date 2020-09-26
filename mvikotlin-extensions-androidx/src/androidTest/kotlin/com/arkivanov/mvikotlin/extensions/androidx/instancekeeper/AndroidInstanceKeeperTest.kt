@@ -4,10 +4,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import com.arkivanov.mvikotlin.extensions.androidx.lifecycle.TestLifecycleCallbacks
-import com.arkivanov.mvikotlin.extensions.androidx.lifecycle.TestLifecycleCallbacks.Event
+import com.arkivanov.mvikotlin.core.instancekeeper.InstanceKeeper
 import org.junit.Test
 import kotlin.test.assertSame
+import kotlin.test.assertTrue
 import androidx.lifecycle.Lifecycle as AndroidLifecycle
 
 class AndroidInstanceKeeperTest {
@@ -16,61 +16,44 @@ class AndroidInstanceKeeperTest {
     fun retains_instance_WHEN_recreated() {
         val viewModelStore = ViewModelStore()
         val instance = Data()
-        Owner(viewModelStore).keeper.instance = instance
+        Owner(viewModelStore).keeper.getOrCreate(key = "data") { instance }
 
-        val newInstance = Owner(viewModelStore).keeper.instance
+        val retainedInstance = Owner(viewModelStore).keeper.getOrCreate<Data>(key = "data") { throw IllegalStateException() }
 
-        assertSame(instance, newInstance)
+        assertSame(instance, retainedInstance)
     }
 
     @Test
-    fun calls_lifecycle() {
-        val callbacks = TestLifecycleCallbacks()
-
+    fun destroys_instances() {
         val viewModelStore = ViewModelStore()
-        val owner1 = Owner(viewModelStore)
-        owner1.keeper.lifecycle.subscribe(callbacks)
-        owner1.resume()
-        owner1.destroy()
-        val owner2 = Owner(viewModelStore)
-        owner2.resume()
-        owner2.destroy()
+        val owner = Owner(viewModelStore)
+        val instances = List(10) { Data() }
+
+        instances.forEachIndexed { index, data ->
+            owner.keeper.getOrCreate(index) { data }
+        }
+
         viewModelStore.clear()
 
-        callbacks.assertEvents(
-            Event.ON_CREATE,
-            Event.ON_START,
-            Event.ON_RESUME,
-            Event.ON_PAUSE,
-            Event.ON_STOP,
-            Event.ON_START,
-            Event.ON_RESUME,
-            Event.ON_PAUSE,
-            Event.ON_STOP,
-            Event.ON_DESTROY
-        )
+        instances.forEach {
+            assertTrue(it.isDestroyed)
+        }
     }
 
-    private fun Owner.resume() {
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_CREATE)
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_START)
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_RESUME)
-    }
+    private class Data : InstanceKeeper.Instance {
+        var isDestroyed: Boolean = false
+            private set
 
-    private fun Owner.destroy() {
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_PAUSE)
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_STOP)
-        lifecycle.handleLifecycleEvent(AndroidLifecycle.Event.ON_DESTROY)
+        override fun onDestroy() {
+            isDestroyed = true
+        }
     }
-
-    private class Data
 
     private class Owner(
         private val viewModelStore: ViewModelStore
     ) : ViewModelStoreOwner, LifecycleOwner {
-        val lifecycle = LifecycleRegistry(this)
-        private val provider = getInstanceKeeperProvider()
-        var keeper = provider.get<Data>(key = "key")
+        private val lifecycle = LifecycleRegistry(this)
+        val keeper = getInstanceKeeper()
 
         override fun getViewModelStore(): ViewModelStore = viewModelStore
 

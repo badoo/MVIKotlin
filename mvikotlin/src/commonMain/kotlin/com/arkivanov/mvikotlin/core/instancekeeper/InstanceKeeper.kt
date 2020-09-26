@@ -1,21 +1,27 @@
 package com.arkivanov.mvikotlin.core.instancekeeper
 
-import com.arkivanov.mvikotlin.core.lifecycle.Lifecycle
-
 /**
  * Provides a way to retain instances (e.g. a `Store`'s instance).
  * A typical use case is Android Activity recreation due to configuration changes.
  */
 @ExperimentalInstanceKeeperApi
-interface InstanceKeeper<T : Any> {
+interface InstanceKeeper {
 
     /**
-     * A [Lifecycle] of the [InstanceKeeper]
+     * Either returns a currently retained [Instance] or creates (and retains) a new one.
+     *
+     * @param factory a factory function, called when there is no retained `Instance` yet
+     * @return either a currently retained `Instance` or a new one
      */
-    val lifecycle: Lifecycle
+    fun <T : Instance> getOrCreate(key: Any, factory: () -> T): T
 
     /**
-     * Read/write property for instance preservation
+     * Represents a retained instance
      */
-    var instance: T?
+    interface Instance {
+        /**
+         * Called when the `Instance` is destroyed. Clean-up any resources associated with the `Instance`.
+         */
+        fun onDestroy()
+    }
 }

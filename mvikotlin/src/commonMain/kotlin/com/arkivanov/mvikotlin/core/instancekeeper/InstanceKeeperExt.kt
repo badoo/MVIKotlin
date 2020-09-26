@@ -1,24 +1,13 @@
 package com.arkivanov.mvikotlin.core.instancekeeper
 
-import com.arkivanov.mvikotlin.core.lifecycle.Lifecycle
-import com.arkivanov.mvikotlin.core.lifecycle.doOnDestroy
 import com.arkivanov.mvikotlin.core.store.Store
 
 /**
- * Either returns a currently retained instance or creates (and retains) a new one.
- *
- * See [InstanceKeeper] for more information.
- *
- * @param factory a factory function, accepts the [InstanceKeeper]'s [Lifecycle],
- * called when there is no retained instance yet
- * @return either a currently retained instance or a new one
+ * Same as [InstanceKeeper.getOrCreate] but the key is `T::class`
  */
 @ExperimentalInstanceKeeperApi
-inline fun <T : Any> InstanceKeeper<T>.getOrCreate(factory: (Lifecycle) -> T): T {
-    check(lifecycle.state != Lifecycle.State.DESTROYED) { "The InstanceKeeper is already destroyed" }
-
-    return instance ?: factory(lifecycle).also { instance = it }
-}
+inline fun <reified T : InstanceKeeper.Instance> InstanceKeeper.getOrCreate(noinline factory: () -> T): T =
+    getOrCreate(T::class, factory)
 
 /**
  * Either returns a currently retained [Store] instance or creates (and retains) a new one.
@@ -30,9 +19,22 @@ inline fun <T : Any> InstanceKeeper<T>.getOrCreate(factory: (Lifecycle) -> T): T
  * @return either a currently retained [Store] instance or a new one
  */
 @ExperimentalInstanceKeeperApi
-fun <T : Store<*, *, *>> InstanceKeeper<T>.getOrCreateStore(factory: () -> T): T =
-    getOrCreate { lifecycle ->
-        val store = factory()
-        lifecycle.doOnDestroy(store::dispose)
-        store
+fun <T : Store<*, *, *>> InstanceKeeper.getOrCreateStore(key: Any, factory: () -> T): T =
+    getOrCreate(key) { RetainedStoreInstance(factory()) }
+        .store
+
+/**
+ * Same as [getOrCreateStore] but the key is `T::class`
+ */
+@ExperimentalInstanceKeeperApi
+inline fun <reified T : Store<*, *, *>> InstanceKeeper.getOrCreateStore(noinline factory: () -> T): T =
+    getOrCreateStore(T::class, factory)
+
+private class RetainedStoreInstance<T : Store<*, *, *>>(
+    val store: T
+) : InstanceKeeper.Instance {
+
+    override fun onDestroy() {
+        store.dispose()
     }
+}
