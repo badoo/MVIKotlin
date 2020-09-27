@@ -4,24 +4,20 @@
 
 Sometimes it might be necessary to preserve a state (e.g. a state of a `Store`) in order to restore it later. A very common use case is Android Activity recreation due to system constraints. MVIKotlin provides a utility for state preservation - the `StateKeeper`.
 
-The `StateKeeper` is a utility for state (or any other data) preservation. In general it does not make any assumptions on what is being preserved and how. The `StateKeeper` is provided by the `mvikotlin` module.
+The `StateKeeper` is an interface for state (or any other data) preservation. In general it does not make any assumptions on what is being preserved and how. The `StateKeeper` is provided by the `mvikotlin` module.
 
 There are several interfaces related to this.
 
 - [StateKeeper](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/statekeeper/StateKeeper.kt) - this generic interface is used to retrieve saved data, if any, and to register a data supplier. The data supplier is called when it's time to save the state. The generic type parameter ensures that types of the saved and restored data are same;
-- [StateKeeperProvider](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/statekeeper/StateKeeperProvider.kt) - this generic interface provides typed instances of the `StateKeeper`;
+- [StateKeeperRegistry](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/statekeeper/StateKeeperRegistry.kt) - this generic interface provides typed instances of the `StateKeeper`;
 
-There are extensions for AndroidX provided by `mvikotlin-extensions-androidx` module, can be used in `Fragments` and `Activities`:
-- [getParcelableStateKeeperProvider()](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin-extensions-androidx/src/androidMain/kotlin/com/arkivanov/mvikotlin/extensions/androidx/statekeeper/ParcelableStateKeeperProvider.kt) - preserves `Parcelable` data;
-- [getSerializableStateKeeperProvider()](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin-extensions-androidx/src/androidMain/kotlin/com/arkivanov/mvikotlin/extensions/androidx/statekeeper/SerializableStateKeeperProvider.kt) - preserves `Serializable` data.
+There are extensions for AndroidX provided by `mvikotlin-extensions-androidx` module, they can be used in `Fragments` and `Activities`:
+- [getParcelableStateRegistry()](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin-extensions-androidx/src/androidMain/kotlin/com/arkivanov/mvikotlin/extensions/androidx/statekeeper/ParcelableStateKeeperRegistry.kt) - preserves `Parcelable` data;
+- [getSerializableStateKeeperRegistry()](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin-extensions-androidx/src/androidMain/kotlin/com/arkivanov/mvikotlin/extensions/androidx/statekeeper/SerializableStateKeeperRegistry.kt) - preserves `Serializable` data.
 
 ## Retaining objects
 
-Another use case is to retain an object instance over its scope recreation. This is also commonly used in Android when configuration changes occur. MVIKotlin provides a solution for this as well.
-
-Here are the related interfaces:
-
-- [InstanceKeeper](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/instancekeeper/InstanceKeeper.kt) - this interface is used to save and retrieve object instances by key. It has just one method `getOrCreate(key, factory)`, as well as a few handy extension functions. When `getOrCreate` method is called first time, the factory function is called and the returned instance is saved (retained). For any future invocation the retained instance is returned, and the factory function is not invoked.
+Another use case is to retain an object instance over its scope recreation. This is also commonly used in Android when configuration changes occur. MVIKotlin provides a solution for this as well: [InstanceKeeper](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/instancekeeper/InstanceKeeper.kt). This interface is used to save and retrieve object instances by key. It has just one method `getOrCreate(key, factory)`, as well as a few handy extension functions. When `getOrCreate` method is called first time, the factory function is called and the returned instance is saved (retained). For any future invocation the retained instance is returned, and the factory function is not invoked.
 
 There is a default implementation available - [DefaultInstanceKeeper](https://github.com/arkivanov/MVIKotlin/blob/master/mvikotlin/src/commonMain/kotlin/com/arkivanov/mvikotlin/core/instancekeeper/DefaultInstanceKeeper.kt). It just stores all retained objects in memory.
 
@@ -38,12 +34,12 @@ internal class CalculatorStoreFactory(private val storeFactory: StoreFactory) {
     fun create(stateKeeper: StateKeeper<State>): CalculatorStore =
         object : CalculatorStore, Store<Intent, State, Nothing> by storeFactory.create(
             name = "CounterStore",
-            initialState = stateKeeper.getState() ?: State(),
+            initialState = stateKeeper.consume() ?: State(),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl
         ) {
         }.also {
-            stateKeeper.register { 
+            stateKeeper.setSupplier { 
                 it.state.copy(isLoading = false) // We can reset any transient state here
             }
         }
@@ -99,8 +95,8 @@ class MainActivity : AppCompatActivity() { // Same for AndroidX Fragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val stateKeeperProvider = getSerializableStateKeeperProvider()
-        // Pass the StateKeeperProvider to dependencies
+        val stateKeeperRegistry = getParcelableStateKeeperRegistry() // Or getSerializableStateKeeperRegistry()
+        // Pass the StateKeeperRegistry to dependencies
     }
 }
 ```
