@@ -8,8 +8,11 @@ package com.arkivanov.mvikotlin.core.statekeeper
 interface StateKeeper<T : Any> {
 
     /**
-     * Returns a previously saved state, if any
+     * Returns and clears a previously saved state, if any
      */
+    fun consume(): T?
+
+    @Deprecated("Use consume()", ReplaceWith("consume()"))
     fun getState(): T?
 
     /**

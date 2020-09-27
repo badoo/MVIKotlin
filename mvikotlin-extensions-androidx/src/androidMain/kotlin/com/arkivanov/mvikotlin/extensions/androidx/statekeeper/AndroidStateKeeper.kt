@@ -4,34 +4,34 @@ import android.os.Bundle
 import androidx.savedstate.SavedStateRegistry
 import com.arkivanov.mvikotlin.core.statekeeper.ExperimentalStateKeeperApi
 import com.arkivanov.mvikotlin.core.statekeeper.StateKeeper
-import com.arkivanov.mvikotlin.core.statekeeper.StateKeeperProvider
 import kotlin.reflect.KClass
 
 @ExperimentalStateKeeperApi
-internal abstract class AndroidStateKeeper<in T : Any>(
-    private val registry: SavedStateRegistry
-) : StateKeeperProvider<T> {
+internal abstract class AndroidStateKeeper<T : Any>(
+    private val registry: SavedStateRegistry,
+    private val clazz: KClass<out T>,
+    private val key: String
+) : StateKeeper<T> {
 
-    override fun <S : T> get(clazz: KClass<out S>, key: String): StateKeeper<S> =
-        object : StateKeeper<S> {
-            override fun getState(): S? =
-                registry
-                    .consumeRestoredStateForKey(key)
-                    ?.apply { classLoader = clazz.java.classLoader }
-                    ?.getValue(KEY)
+    override fun consume(): T? =
+        registry
+            .consumeRestoredStateForKey(key)
+            ?.apply { classLoader = clazz.java.classLoader }
+            ?.getValue(KEY)
 
-            override fun setSupplier(supplier: (() -> S)?) {
-                if (supplier == null) {
-                    registry.unregisterSavedStateProvider(key)
-                } else {
-                    registry.registerSavedStateProvider(key) { saveState(supplier) }
-                }
-            }
+    override fun getState(): T? = consume()
 
-            private fun saveState(supplier: () -> S): Bundle =
-                Bundle().apply {
-                    putValue(KEY, supplier())
-                }
+    override fun setSupplier(supplier: (() -> T)?) {
+        if (supplier == null) {
+            registry.unregisterSavedStateProvider(key)
+        } else {
+            registry.registerSavedStateProvider(key) { saveState(supplier) }
+        }
+    }
+
+    private fun saveState(supplier: () -> T): Bundle =
+        Bundle().apply {
+            putValue(KEY, supplier())
         }
 
     abstract fun <S : T> Bundle.getValue(key: String): S?
