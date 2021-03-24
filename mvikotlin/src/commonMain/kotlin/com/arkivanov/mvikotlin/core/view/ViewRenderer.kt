@@ -8,7 +8,7 @@ import kotlin.js.JsName
  *
  * @see MviView
  */
-interface ViewRenderer<in Model : Any> {
+fun interface ViewRenderer<in Model : Any> {
 
     /**
      * Renders (displays) the provided `View Model`
