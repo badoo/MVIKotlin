@@ -1,0 +1,22 @@
+{
+  "name": "MVIKotlin Time Travel",
+  "description": "MVIKotlin Time Travel extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "app": {
+    "background": {
+      "scripts": ["MVIKotlin-app-chrome.js"]
+    }
+  },
+  "permissions": ["system.network"],
+  "optional_permissions": ["background"],
+  "sockets": {
+    "tcpServer" : {
+      "listen": [":"]
+    }
+  },
+  "externally_connectable": {
+    "matches": ["*://localhost/*"]
+  }
+}
+

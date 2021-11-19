@@ -1,0 +1,8 @@
+builtins_platform=JS
+unique_name=MVIKotlin.mvikotlin-timetravel-client\:app-chrome
+compiler_version=1.5.30
+depends=kotlin
+jsOutputName=MVIKotlin-app-chrome
+abi_version=1.5.0
+metadata_version=1.4.1
+ir_version=1.0.0

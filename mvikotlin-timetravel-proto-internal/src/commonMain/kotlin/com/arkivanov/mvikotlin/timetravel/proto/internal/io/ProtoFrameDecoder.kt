@@ -7,7 +7,7 @@ class ProtoFrameDecoder(
     private var buffer = ByteArray(size = 1024)
     private var index = 0
 
-    fun accept(data: ByteArray, size: Int) {
+    fun accept(data: ByteArray, size: Int = data.size) {
         for (i in 0 until size) {
             ensureFreeSpace()
             buffer[index] = data[i]

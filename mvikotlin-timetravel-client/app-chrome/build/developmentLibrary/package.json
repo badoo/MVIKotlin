@@ -1,0 +1,11 @@
+{
+  "name": "MVIKotlin-app-chrome",
+  "version": "0.0.0-unspecified",
+  "main": "MVIKotlin-app-chrome.js",
+  "types": "MVIKotlin-app-chrome.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}
