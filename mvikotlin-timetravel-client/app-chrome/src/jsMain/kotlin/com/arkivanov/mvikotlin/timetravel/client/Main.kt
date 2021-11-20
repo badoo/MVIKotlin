@@ -1,17 +1,14 @@
 package com.arkivanov.mvikotlin.timetravel.client
 
-import com.arkivanov.mvikotlin.timetravel.proto.internal.data.storeeventtype.StoreEventType
-import com.arkivanov.mvikotlin.timetravel.proto.internal.data.timetravelevent.TimeTravelEvent
-import com.arkivanov.mvikotlin.timetravel.proto.internal.data.timetraveleventsupdate.TimeTravelEventsUpdate
-import com.arkivanov.mvikotlin.timetravel.proto.internal.data.timetravelstateupdate.TimeTravelStateUpdate
-import com.arkivanov.mvikotlin.timetravel.proto.internal.io.ProtoDecoder
-import com.arkivanov.mvikotlin.timetravel.proto.internal.io.ProtoEncoder
-import com.arkivanov.mvikotlin.timetravel.proto.internal.io.ProtoFrameDecoder
-import com.arkivanov.mvikotlin.timetravel.proto.internal.io.ProtoFrameEncoder
+import chrome.Port
 import org.khronos.webgl.ArrayBuffer
 
-fun main(args: Array<String>) {
+fun main() {
     console.log("Loaded")
+
+    val clientSockedIds = HashSet<Int>()
+    val ports = HashSet<Port>()
+
     chrome.sockets.tcpServer.create { createInfo ->
         console.log("Created")
         console.log(createInfo)
@@ -32,15 +29,19 @@ fun main(args: Array<String>) {
                 console.log("onAccept")
                 console.log(acceptInfo)
 
+                clientSockedIds += acceptInfo.clientSocketId
+
                 chrome.sockets.tcp.setPaused(socketId = acceptInfo.clientSocketId, paused = false)
 
-                val protoDecoder = ProtoDecoder()
-
-                val protoFrameDecoder =
-                    ProtoFrameDecoder { data ->
-                        val protoObject = protoDecoder.decode(data)
-                        console.log(protoObject)
+                chrome.sockets.tcp.onReceiveError.addListener onReceiveError@{ receiveErrorInfo ->
+                    if (receiveErrorInfo.socketId != acceptInfo.clientSocketId) {
+                        return@onReceiveError
                     }
+
+                    console.log("onReceiveError")
+                    console.log(receiveErrorInfo)
+                    clientSockedIds -= receiveErrorInfo.socketId
+                }
 
                 chrome.sockets.tcp.onReceive.addListener onReceive@{ receiveInfo ->
                     if (receiveInfo.socketId != acceptInfo.clientSocketId) {
@@ -50,47 +51,35 @@ fun main(args: Array<String>) {
                     println("onReceive")
                     console.log(receiveInfo)
 
-                    protoFrameDecoder.accept(data = receiveInfo.data.toByteArray())
-                }
-
-                val state =
-                    TimeTravelEventsUpdate.All(
-                        listOf(
-                            TimeTravelEvent(
-                                id = 1L,
-                                storeName = "SomeStore",
-                                type = StoreEventType.STATE,
-                                valueType = "String",
-                            )
-                        )
-                    )
-
-                val frameEncoder = ProtoFrameEncoder { data, size ->
-                    chrome.sockets.tcp.send(
-                        sockedId = acceptInfo.clientSocketId,
-                        data = data.copyOf(size)
-                    ) { sendInfo ->
-                        console.log("send")
-                        console.log(sendInfo)
+                    ports.forEach { port ->
+                        port.postMessage(receiveInfo.data)
                     }
                 }
-                val protoEncoder = ProtoEncoder(frameEncoder::accept)
+            }
+        }
+    }
 
-                protoEncoder.encode(
-                    TimeTravelStateUpdate(
-                        eventsUpdate = state,
-                        selectedEventIndex = 0,
-                        mode = TimeTravelStateUpdate.Mode.STOPPED,
-                    )
-                )
+    chrome.runtime.onConnectExternal.addListener { port ->
+        console.log("onConnectExternal")
+        console.log(port)
+        ports += port
+
+        port.onDisconnect.addListener {
+            console.log("onDisconnect")
+            console.log(it)
+            ports -= it
+        }
+
+        port.onMessage.addListener { message, _ ->
+            console.log("onMessage")
+            console.log(message)
+
+            clientSockedIds.forEach { clientSocketId ->
+                chrome.sockets.tcp.send(
+                    sockedId = clientSocketId,
+                    data = message.unsafeCast<ArrayBuffer>()
+                ) {}
             }
         }
     }
 }
-
-
-//fun EventTarget.onEvent(type: String, listener: (Event) -> Unit) =
-//    addEventListener(type, listener)
-//
-//fun EventTarget.onContentLoadedEvent(listener: (Event) -> Unit) =
-//    onEvent("DOMContentLoaded", listener)

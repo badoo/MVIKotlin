@@ -2,9 +2,11 @@
 
 package chrome.sockets.tcpServer
 
-import chrome.events.Event
+external val onAccept: OnAccept
 
-external val onAccept: Event<AcceptInfo>
+external interface OnAccept {
+    fun addListener(callback: (AcceptInfo) -> Unit)
+}
 
 external fun create(
     properties: SocketProperties = definedExternally,

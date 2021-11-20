@@ -2,19 +2,32 @@
 
 package chrome.sockets.tcp
 
-import chrome.events.Event
 import org.khronos.webgl.ArrayBuffer
 
-external val onReceive: Event<ReceiveInfo>
+external val onReceive: OnReceive
+external val onReceiveError: OnReceiveError
+
+external interface OnReceive {
+    fun addListener(callback: (ReceiveInfo) -> Unit)
+}
 
 external interface ReceiveInfo {
     val data: ArrayBuffer
     val socketId: Int
 }
 
+external interface OnReceiveError {
+    fun addListener(callback: (ReceiveErrorInfo) -> Unit)
+}
+
+external interface ReceiveErrorInfo {
+    val resultCode: Int
+    val socketId: Int
+}
+
 external fun send(
     sockedId: Int,
-    data: ByteArray,
+    data: ArrayBuffer,
     callback: (SendInfo) -> Unit
 )
 
