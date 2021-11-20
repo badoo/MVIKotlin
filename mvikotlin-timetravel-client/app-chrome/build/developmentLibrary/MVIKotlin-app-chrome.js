@@ -172,6 +172,19 @@
     }
     return accumulator;
   }
+  function forEachIndexed(_this_, action) {
+    var index = 0;
+    var indexedObject = _this_;
+    var inductionVariable = 0;
+    var last = indexedObject.length;
+    while (inductionVariable < last) {
+      var item = indexedObject[inductionVariable];
+      inductionVariable = inductionVariable + 1 | 0;
+      var tmp1 = index;
+      index = tmp1 + 1 | 0;
+      action(tmp1, item);
+    }
+  }
   function _get_indices_(_this_) {
     return new IntRange(0, _get_lastIndex_(_this_));
   }
@@ -14095,6 +14108,22 @@
     }
     return tmp$ret$0;
   }
+  function get_0(_this_, index) {
+    var tmp$ret$0;
+    $l$block: {
+      tmp$ret$0 = _this_;
+      break $l$block;
+    }
+    return tmp$ret$0[index];
+  }
+  function set(_this_, index, value) {
+    var tmp$ret$0;
+    $l$block: {
+      tmp$ret$0 = _this_;
+      break $l$block;
+    }
+    tmp$ret$0[index] = value;
+  }
   function _get_value_($this) {
     return $this._value_2;
   }
@@ -17492,22 +17521,6 @@
   function toString_2(_this_, radix) {
     return toStringImpl(_this_, checkRadix(radix));
   }
-  function _get_FRAME_SEPARATOR_() {
-    return FRAME_SEPARATOR;
-  }
-  var FRAME_SEPARATOR;
-  function _get_PROTO_VERSION_() {
-    return PROTO_VERSION;
-  }
-  var PROTO_VERSION;
-  function FRAME_SEPARATOR$init$() {
-    var tmp$ret$0;
-    $l$block: {
-      tmp$ret$0 = new Int8Array([0, 127, 0, -128, 1, 127, -1, -128]);
-      break $l$block;
-    }
-    return tmp$ret$0;
-  }
   function main() {
     console.log('Loaded');
     var clientSockedIds = HashSet_init_$Create$();
@@ -17548,12 +17561,13 @@
       return Unit_getInstance();
     }println('onReceive');
     console.log(receiveInfo);
+    var str = stringify(receiveInfo.data);
     {
       var tmp0_iterator_1 = this._$ports.iterator_0_k$();
       while (tmp0_iterator_1.hasNext_0_k$()) {
         var element_2 = tmp0_iterator_1.next_0_k$();
         {
-          element_2.postMessage(receiveInfo.data);
+          element_2.postMessage(str);
         }
       }
     }
@@ -17672,23 +17686,23 @@
   _no_name_provided__57.prototype.invoke_ckhnr7_k$ = function (message, _anonymous_parameter_1_) {
     console.log('onMessage');
     console.log(message);
+    var tmp$ret$1;
+    $l$block_0: {
+      var tmp$ret$0;
+      $l$block: {
+        tmp$ret$0 = message;
+        break $l$block;
+      }
+      tmp$ret$1 = tmp$ret$0;
+      break $l$block_0;
+    }
+    var data = parseArrayBuffer(tmp$ret$1);
     {
       var tmp0_iterator_1 = this._$clientSockedIds_3.iterator_0_k$();
       while (tmp0_iterator_1.hasNext_0_k$()) {
         var element_2 = tmp0_iterator_1.next_0_k$();
         {
-          var tmp$ret$1;
-          $l$block_0: {
-            var tmp$ret$0;
-            $l$block: {
-              tmp$ret$0 = message;
-              break $l$block;
-            }
-            tmp$ret$1 = tmp$ret$0;
-            break $l$block_0;
-          }
-          var tmp = tmp$ret$1;
-          send(element_2, tmp, _no_name_provided_$factory_39());
+          send(element_2, data, _no_name_provided_$factory_39());
         }
       }
     }
@@ -17789,19 +17803,67 @@
       return Unit_getInstance();
     };
   }
-  function toByteArray(_this_) {
-    var tmp$ret$1;
-    $l$block_0: {
-      var tmp0_unsafeCast_0 = new Int8Array(_this_);
-      var tmp$ret$0;
-      $l$block: {
-        tmp$ret$0 = tmp0_unsafeCast_0;
-        break $l$block;
-      }
-      tmp$ret$1 = tmp$ret$0;
-      break $l$block_0;
+  function stringify(_this_) {
+    var byteArray = new Int8Array(_this_);
+    var tmp = 0;
+    var tmp_0 = byteArray.length;
+    var tmp$ret$0;
+    $l$block: {
+      tmp$ret$0 = fillArrayVal(Array(tmp_0), null);
+      break $l$block;
     }
-    return tmp$ret$1;
+    var tmp_1 = tmp$ret$0;
+    while (tmp < tmp_0) {
+      var tmp_2 = tmp;
+      var tmp$ret$3;
+      $l$block_2: {
+        var tmp$ret$2;
+        $l$block_1: {
+          var tmp$ret$1;
+          $l$block_0: {
+            tmp$ret$1 = byteArray;
+            break $l$block_0;
+          }
+          tmp$ret$2 = tmp$ret$1[tmp_2];
+          break $l$block_1;
+        }
+        tmp$ret$3 = tmp$ret$2;
+        break $l$block_2;
+      }
+      tmp_1[tmp_2] = tmp$ret$3;
+      tmp = tmp + 1 | 0;
+    }
+    var array = tmp_1;
+    return JSON.stringify(array);
+  }
+  function parseArrayBuffer(_this_) {
+    var array = JSON.parse(_this_);
+    var arrayBuffer = new ArrayBuffer(array.length);
+    var byteArray = new Int8Array(arrayBuffer);
+    {
+      var index_1 = 0;
+      var indexedObject = array;
+      var inductionVariable = 0;
+      var last = indexedObject.length;
+      while (inductionVariable < last) {
+        var item_3 = indexedObject[inductionVariable];
+        inductionVariable = inductionVariable + 1 | 0;
+        {
+          var tmp1_4 = index_1;
+          index_1 = tmp1_4 + 1 | 0;
+          var tmp0__anonymous__5 = tmp1_4;
+          {
+            var tmp$ret$0;
+            $l$block: {
+              tmp$ret$0 = byteArray;
+              break $l$block;
+            }
+            tmp$ret$0[tmp0__anonymous__5] = item_3;
+          }
+        }
+      }
+    }
+    return arrayBuffer;
   }
   AbstractMap.prototype._get_entries__0_k$ = Map_0.prototype._get_entries__0_k$;
   CombinedContext.prototype.plus_d7pszg_k$ = CoroutineContext.prototype.plus_d7pszg_k$;
@@ -17848,8 +17910,6 @@
   TWO_PWR_32_DBL_ = 4.294967296E9;
   TWO_PWR_63_DBL_ = 9.223372036854776E18;
   propertyRefClassMetadataCache = propertyRefClassMetadataCache$init$();
-  FRAME_SEPARATOR = FRAME_SEPARATOR$init$();
-  PROTO_VERSION = 1;
   main();
   return _;
 }));

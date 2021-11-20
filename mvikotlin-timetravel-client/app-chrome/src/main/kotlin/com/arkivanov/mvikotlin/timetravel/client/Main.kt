@@ -1,7 +1,6 @@
 package com.arkivanov.mvikotlin.timetravel.client
 
 import chrome.Port
-import org.khronos.webgl.ArrayBuffer
 
 fun main() {
     console.log("Loaded")
@@ -51,8 +50,9 @@ fun main() {
                     println("onReceive")
                     console.log(receiveInfo)
 
+                    val str = receiveInfo.data.stringify()
                     ports.forEach { port ->
-                        port.postMessage(receiveInfo.data)
+                        port.postMessage(str)
                     }
                 }
             }
@@ -74,10 +74,12 @@ fun main() {
             console.log("onMessage")
             console.log(message)
 
+            val data = message.unsafeCast<String>().parseArrayBuffer()
+
             clientSockedIds.forEach { clientSocketId ->
                 chrome.sockets.tcp.send(
                     sockedId = clientSocketId,
-                    data = message.unsafeCast<ArrayBuffer>()
+                    data = data
                 ) {}
             }
         }

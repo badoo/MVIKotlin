@@ -36,3 +36,10 @@ dependencies {
     implementation(npm("@material-ui/core", "4.9.14"))
     implementation(npm("@material-ui/icons", "4.9.1"))
 }
+
+// Workaround for https://youtrack.jetbrains.com/issue/KT-49124
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
+        resolution("@webpack-cli/serve", "1.5.2")
+    }
+}
