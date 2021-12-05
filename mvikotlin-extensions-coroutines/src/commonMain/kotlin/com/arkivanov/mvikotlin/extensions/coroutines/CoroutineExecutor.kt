@@ -31,7 +31,9 @@ open class CoroutineExecutor<in Intent : Any, in Action : Any, in State : Any, R
     }
 
     final override fun handleIntent(intent: Intent) {
-        executeIntent(intent, getState)
+        scope.launch {
+            executeIntent(intent, getState)
+        }
     }
 
     /**
@@ -42,11 +44,13 @@ open class CoroutineExecutor<in Intent : Any, in Action : Any, in State : Any, R
      * @param getState a `State` supplier that returns the *current* `State` of the [Store]
      */
     @MainThread
-    protected open fun executeIntent(intent: Intent, getState: () -> State) {
+    protected open suspend fun executeIntent(intent: Intent, getState: () -> State) {
     }
 
     final override fun handleAction(action: Action) {
-        executeAction(action, getState)
+        scope.launch {
+            executeAction(action, getState)
+        }
     }
 
     /**
@@ -57,7 +61,7 @@ open class CoroutineExecutor<in Intent : Any, in Action : Any, in State : Any, R
      * @param getState a `State` supplier that returns the *current* `State` of the [Store]
      */
     @MainThread
-    protected open fun executeAction(action: Action, getState: () -> State) {
+    protected open suspend fun executeAction(action: Action, getState: () -> State) {
     }
 
     override fun dispose() {
