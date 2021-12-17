@@ -4,13 +4,17 @@
 [![License](https://img.shields.io/badge/License-Apache/2.0-blue.svg)](https://github.com/arkivanov/MVIKotlin/blob/master/LICENSE)
 [![kotlinlang|MVIKotlin](https://img.shields.io/badge/kotlinlang-mvikotlin-blue?logo=slack)](https://kotlinlang.slack.com/archives/C01403U1ZGW)
 
-Should you have any questions or ideas please welcome to the Slack channel: [#mvikotlin](https://kotlinlang.slack.com/archives/C01403U1ZGW)
+## Maintenance notice
+
+**This repository is not maintained. [Arkadii Ivanov](https://github.com/arkivanov) continued to work on the fork [arkivanov/MVIKotlin](https://github.com/arkivanov/MVIKotlin).**
 
 ## Inspiration
 
 This project is inspired by [Badoo MVICore](https://github.com/badoo/MVICore) library.
 
 ## Overview
+
+Should you have any questions or ideas please welcome to the Slack channel: [#mvikotlin](https://kotlinlang.slack.com/archives/C01403U1ZGW)
 
 ### What is MVI
 MVI stands for Model-View-Intent. It is an architectural pattern that utilizes unidirectional data flow. The data circulates between `Model` and `View` only in one direction - from `Model` to `View` and from `View` to `Model`.
