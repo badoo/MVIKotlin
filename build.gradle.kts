@@ -95,7 +95,7 @@ allprojects {
     plugins.apply("io.gitlab.arturbosch.detekt")
 
     detekt {
-        toolVersion = "1.14.2"
+        toolVersion = "1.20.0"
         parallel = true
         config = files("$rootDir/detekt.yml")
         input = files(file("src").listFiles()?.find { it.isDirectory } ?: emptyArray<Any>())
