@@ -25,9 +25,9 @@ jobs:
     needs: create-staging-repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@0f62d2ad8407a414cddd4790bed06fd9ebda0f56 # v1
         with:
           java-version: 11
       - name: Publish Metadata
@@ -43,9 +43,9 @@ jobs:
     needs: create-staging-repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@0f62d2ad8407a414cddd4790bed06fd9ebda0f56 # v1
         with:
           java-version: 11
       - name: Publish on Linux
@@ -61,9 +61,9 @@ jobs:
     needs: create-staging-repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@0f62d2ad8407a414cddd4790bed06fd9ebda0f56 # v1
         with:
           java-version: 11
       - name: Publish on macOS
@@ -79,7 +79,7 @@ jobs:
     needs: [ create-staging-repository, metadata-publish, linux-publish, macos-publish ]
     steps:
       - name: Close staging repository
-        uses: nexus-actions/release-nexus-staging-repo@v1.1
+        uses: nexus-actions/release-nexus-staging-repo@dad6f3623f5ac955b7e747bcfafa2c36b32fad80 # v1.1
         with:
           username: arkivanov
           password: ${{ secrets.SONATYPE_PASSWORD }}
@@ -91,9 +91,9 @@ jobs:
     needs: close-staging-repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@0f62d2ad8407a414cddd4790bed06fd9ebda0f56 # v1
         with:
           java-version: 11
       - name: Update dependencies
@@ -108,9 +108,9 @@ jobs:
     needs: close-staging-repository
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@0f62d2ad8407a414cddd4790bed06fd9ebda0f56 # v1
         with:
           java-version: 11
       - name: Check macOS publication
