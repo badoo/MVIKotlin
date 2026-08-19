@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: 11
       - name: Publish Metadata
@@ -45,7 +45,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: 11
       - name: Publish on Linux
@@ -63,7 +63,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: 11
       - name: Publish on macOS
@@ -93,7 +93,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: 11
       - name: Update dependencies
@@ -110,7 +110,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Install Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: 11
       - name: Check macOS publication
