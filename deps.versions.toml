@@ -1,7 +1,7 @@
 [versions]
 
 mvikotlin = "3.0.0-alpha02"
-kotlin = "1.5.30"
+kotlin = "2.4.20"
 kotlinxBinaryCompatibilityValidatorGradlePlugin = "0.8.0-RC"
 kotlinxCoroutines = "1.5.2"
 intellijGradlePlugin = "0.4.18"
